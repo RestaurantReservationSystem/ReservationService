@@ -8,7 +8,7 @@ import (
 
 type ReservationService struct {
 	ReservationRepo *postgres.ReservationRepository
-	pb.UnimplementedReservationsServiceServer
+	pb.UnimplementedReservationServiceServer
 }
 
 func NewReservationService(repo *postgres.ReservationRepository) *ReservationService {

@@ -15,14 +15,14 @@ func NewOrderRepository(db *sql.DB) *OrderRepository {
 	return &OrderRepository{Db: db}
 }
 
-func (repo *OrderRepository) CreateReservation(request *pb.CreateOrderRequest) (*pb.Void, error) {
+func (repo *OrderRepository) CreateOrder(request *pb.CreateOrderRequest) (*pb.Void, error) {
 	_, err := repo.Db.Exec("insert into orders(reservation_id,menu_item_id,quantity,created_at) values ($1,$2,$3,$4)", request.ReservationId, request.MenuItemId, request.Quantity, time.Now())
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Void{}, err
 }
-func (repo *OrderRepository) UpdateReservation(request *pb.UpdateOrderRequest) (*pb.Void, error) {
+func (repo *OrderRepository) UpdateOrder(request *pb.UpdateOrderRequest) (*pb.Void, error) {
 	_, err := repo.Db.Exec("update orders set reservation_id=$1,menu_item_id=$2,quantity=$3,updated_at=$4 where id=$5 and deleted_at is null", request.ReservationId, request.MenuItemId, request.Quantity, time.Now(), request.Id)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (repo *OrderRepository) GetAllOrder(request *pb.GetAllOrderRequest) (*pb.Or
 	query := "select reservation_id,menu_item_id,quantity from orders where deleted_at is null"
 
 	query = query + filter + limit + offset
-	query, arr = storage.ReplaceQueryParams(query, params)
+	query, arr = help.ReplaceQueryParams(query, params)
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err
