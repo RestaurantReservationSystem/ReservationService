@@ -80,7 +80,7 @@ func (repo *ReservationRepository) GetAllReservation(request *pb.GetAllReservati
 	query := "select user_id,restaurant_id,reservation_time,status from reservations where deleted_at is null"
 
 	query = query + filter + limit + offset
-	query, arr = storage.ReplaceQueryParams(query, params)
+	query, arr = help.ReplaceQueryParams(query, params)
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err

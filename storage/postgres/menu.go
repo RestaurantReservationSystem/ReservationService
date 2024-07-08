@@ -83,7 +83,7 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 	query := "select restaurant_id,name,description,price from menu where deleted_at is null"
 
 	query = query + filter + limit + offset
-	query, arr = storage.ReplaceQueryParams(query, params)
+	query, arr = help.ReplaceQueryParams(query, params)
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err
