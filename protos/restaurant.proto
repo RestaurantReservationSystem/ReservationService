@@ -13,11 +13,8 @@ message RestaurantResponse {
   string description = 5;
 }
 message GetAllRestaurantRequest{
-  string name = 2;
-  string address = 3;
-  string phone_number = 4;
-  string description = 5;
-  Filter limitOffset=6;
+  string address = 1;
+  Filter limitOffset=2;
 
 }
 message CreateRestaurantRequest {

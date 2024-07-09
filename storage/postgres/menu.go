@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	pb "reservation_service/genproto"
-	"reservation_service/help"
+	storage "reservation_service/help"
 	"time"
 )
 
@@ -16,29 +16,32 @@ func NewMenuRepository(db *sql.DB) *MenuRepository {
 }
 
 func (repo *MenuRepository) CreateMenu(request *pb.CreateMenuRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("insert into menus(restaurant_id,name,description,price,created_at) values ($1,$2,$3,$4,$5)", request.RestaurantId, request.Name, request.Description, request.Price, time.Now())
+	_, err := repo.Db.Exec("insert into menu(restaurant_id,name,description,price,created_at) values ($1,$2,$3,$4,$5)", request.RestaurantId, request.Name, request.Description, request.Price, time.Now())
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Void{}, err
 }
+
 func (repo *MenuRepository) UpdateMenu(request *pb.UpdateMenuRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("update menus set restaurant_id=$1,name=$2,description=$3,price=$4,updated_at=$5 where id=$6 and deleted_at is null", request.RestaurantId, request.Name, request.Description, request.Price, time.Now(), request.Id)
+	_, err := repo.Db.Exec("update menu set restaurant_id=$1,name=$2,description=$3,price=$4,updated_at=$5 where id=$6 and deleted_at is null", request.RestaurantId, request.Name, request.Description, request.Price, time.Now(), request.Id)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Void{}, err
 }
+
 func (repo *MenuRepository) DeleteMenu(request *pb.IdRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("update menus set deleted_at=$1 where id=$2 and deleted_at is null", time.Now(), request.Id)
+	_, err := repo.Db.Exec("update menu set deleted_at=$1 where id=$2 and deleted_at is null", time.Now(), request.Id)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Void{}, err
 }
+
 func (repo *MenuRepository) GetByIdMenu(request *pb.IdRequest) (*pb.MenuResponse, error) {
 	var response pb.MenuResponse
-	err := repo.Db.QueryRow("select restaurant_id,name,description,price from menus where deleted_at is null and id=$1", request.Id).Scan(&response.RestaurantId, &response.Name, &response.Description, &response.Price)
+	err := repo.Db.QueryRow("select restaurant_id,name,description,price from menu where deleted_at is null and id=$1", request.Id).Scan(&response.RestaurantId, &response.Name, &response.Description, &response.Price)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +80,7 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 		params["offset"] = request.LimitOffset.Offset
 		filter += "and offset:=offset"
 	}
-	query := "select restaurant_id,name,description,price from menus where deleted_at is null"
+	query := "select restaurant_id,name,description,price from menu where deleted_at is null"
 
 	query = query + filter + limit + offset
 	query, arr = help.ReplaceQueryParams(query, params)
