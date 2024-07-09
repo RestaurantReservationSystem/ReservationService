@@ -22,13 +22,15 @@ func (repo *RestaurantRepo) CreateRestaurant(request *pb.CreateRestaurantRequest
 	}
 	return &pb.Void{}, nil
 }
+
 func (repo *RestaurantRepo) UpdateRestaurant(request *pb.UpdateRestaurantRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("update restaurants set name=$1,address=$2,phone_number=$3,description=$4 ,updated_at  where id=$5 and deleted_at is null", request.Name, request.Address, request.PhoneNumber, request.Description, time.Now(), request.Id)
+	_, err := repo.Db.Exec("update restaurants set name=$1,address=$2,phone_number=$3,description=$4 ,updated_at = $5  where id=$6 and deleted_at is null", request.Name, request.Address, request.PhoneNumber, request.Description, time.Now(), request.Id)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Void{}, nil
 }
+
 func (repo *RestaurantRepo) DeleteRestaurant(request *pb.IdRequest) (*pb.Void, error) {
 	_, err := repo.Db.Exec("update  restaurants set  deleted_at=current_timestamp where  deleted_at is null and id=$1", request.Id)
 	if err != nil {
@@ -53,32 +55,23 @@ func (repo *RestaurantRepo) GetAllRestaurants(request *pb.GetAllRestaurantReques
 		offset string
 	)
 	filter := ""
-	if len(request.Name) > 0 {
-		params["name"] = request.Name
-		filter += " and name = :name "
-	}
+
 	if len(request.Address) > 0 {
 		params["address"] = request.Address
-		filter += " and address:=address"
-	}
-	if len(request.PhoneNumber) > 0 {
-		params["phone_number"] = request.PhoneNumber
-		filter += "and phone_number:=phone_number"
-	}
-	if len(request.Description) > 0 {
-		params["description"] = request.Description
-		filter += "and description:=description"
-	}
-	if request.LimitOffset.Limit > 0 {
-		params["limit"] = request.LimitOffset.Limit
-		filter += "and limit:=limit"
-	}
-	if request.LimitOffset.Offset > 0 {
-		params["offset"] = request.LimitOffset.Offset
-		filter += "and offset:=offset"
+		arr = append(arr, " ADDRESS :address ")
 	}
 
-	query := "select name,address ,phone_number,description from restaurans  where  deleted_at is null"
+	if request.LimitOffset.Limit > 0 {
+		params["limit"] = request.LimitOffset.Limit
+		limit += "LIMIT :limit "
+	}
+
+	if request.LimitOffset.Offset > 0 {
+		params["offset"] = request.LimitOffset.Offset
+		offset += "OFFSET :offset "
+	}
+
+	query := "select name,address ,phone_number,description from restaurants  where  deleted_at is null "
 
 	query = query + filter + limit + offset
 	query, arr = storage.ReplaceQueryParams(query, params)

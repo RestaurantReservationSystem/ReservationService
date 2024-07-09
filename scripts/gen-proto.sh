@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 # Use the current directory if none is provided
 if [ -z "$1" ]; then

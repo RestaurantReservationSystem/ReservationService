@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	pb "reservation_service/genproto"
-	"reservation_service/help"
+	storage "reservation_service/help"
 	"time"
 )
 
