@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 	pb "reservation_service/genproto"
-	storage "reservation_service/help"
+	"reservation_service/help"
 	"time"
 )
 
@@ -74,11 +74,11 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 	}
 	if request.LimitOffset.Limit > 0 {
 		params["limit"] = request.LimitOffset.Limit
-		filter += "and limit:=limit"
+		limit += `LIMIT :limit`
 	}
 	if request.LimitOffset.Offset > 0 {
 		params["offset"] = request.LimitOffset.Offset
-		filter += "and offset:=offset"
+		offset += `OFFSET :offset`
 	}
 	query := "select restaurant_id,name,description,price from menu where deleted_at is null"
 
