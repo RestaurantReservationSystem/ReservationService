@@ -4,26 +4,30 @@ import (
 	"fmt"
 	"reflect"
 	pb "reservation_service/genproto"
+	"reservation_service/storage"
 	"testing"
 )
 
-func TestReservationRepository_CreateReservation(t *testing.T) {
-	db, err := ConnectionDb()
+func ReservationRep(t *testing.T) *ReservationRepository {
+	db, err := storage.ConnectionDb()
 	if err != nil {
-		fmt.Println("+++++++", err)
-		panic(err)
+		t.Error("ERROR : ", err)
+		return nil
 	}
-	fmt.Println("+++++++++++++")
+	userRepo := c(db)
+	return userRepo
+}
 
-	res := NewReservationRepository(db)
-	fmt.Println(res)
+func TestReservationRepository_CreateReservation(t *testing.T) {
+	Reservation := ReservationRep(t)
+
 	reser := pb.CreateReservationRequest{
 		UserId:          "a12d4f5e-0e9c-42b8-847a-3c54b7f6a4c2",
 		RestaurantId:    "30.00",
 		ReservationTime: "credit_card",
 		Status:          "345rtg",
 	}
-	response, err := res.CreateReservation(&reser)
+	response, err := Reservation.CreateReservation(&reser)
 	if err != nil {
 		fmt.Println("_________", err)
 		panic(err)
@@ -34,18 +38,11 @@ func TestReservationRepository_CreateReservation(t *testing.T) {
 	}
 }
 func TestReservationRepository_DeleteReservation(t *testing.T) {
-	db, err := ConnectionDb()
-	if err != nil {
-
-		panic(err)
-	}
-
-	res := NewReservationRepository(db)
-	fmt.Println(res)
+	Reservation := ReservationRep(t)
 	resDelete := pb.IdRequest{
 		Id: "b8811cf2-9352-4dc3-9884-c7dabca7ab8b",
 	}
-	response, err := res.DeleteReservation(&resDelete)
+	response, err := Reservation.DeleteReservation(&resDelete)
 	if err != nil {
 		fmt.Println("+++++++", err)
 		panic(err)
@@ -57,21 +54,15 @@ func TestReservationRepository_DeleteReservation(t *testing.T) {
 
 }
 func TestReservationRepository_UpdateReservation(t *testing.T) {
-	db, err := ConnectionDb()
-	if err != nil {
+	Reservation := ReservationRep(t)
 
-		panic(err)
-	}
-
-	res := NewReservationRepository(db)
-	fmt.Println(res)
 	reserUpdate := pb.UpdateReservationRequest{
 		UserId:          "a12d4f5e-0e9c-42b8-847a-3c54b7f6a4c2",
 		RestaurantId:    "30.00",
 		ReservationTime: "credit_card",
 		Status:          "345rtg",
 	}
-	response, err := res.UpdateReservation(&reserUpdate)
+	response, err := Reservation.UpdateReservation(&reserUpdate)
 	if err != nil {
 		fmt.Println("+++++++", err)
 		panic(err)
@@ -83,19 +74,12 @@ func TestReservationRepository_UpdateReservation(t *testing.T) {
 }
 
 func TestReservationRepository_GetReservation(t *testing.T) {
-	db, err := ConnectionDb()
-	if err != nil {
-
-		panic(err)
-	}
-
-	res := NewReservationRepository(db)
+	Reservation := ReservationRep(t)
 
 	getReservation := pb.IdRequest{
 		Id: "e7c84f17-6a39-4889-92fe-0a9f3a3c062",
 	}
 
-	fmt.Println(res)
 	expected := pb.ReservationResponse{
 		UserId:          "a12d4f5e-0e9c-42b8-847a-3c54b7f6a4c2",
 		RestaurantId:    "30.00",
@@ -103,7 +87,7 @@ func TestReservationRepository_GetReservation(t *testing.T) {
 		Status:          "345rtg",
 	}
 
-	response, err := res.GetByIdReservation(&getReservation)
+	response, err := Reservation.GetByIdReservation(&getReservation)
 	if err != nil {
 		fmt.Println("+++++++", err)
 		panic(err)
@@ -115,13 +99,7 @@ func TestReservationRepository_GetReservation(t *testing.T) {
 }
 
 func TestAllReservationRepository_GetAllReservation(t *testing.T) {
-	db, err := ConnectionDb()
-	if err != nil {
-
-		panic(err)
-	}
-
-	reservation := NewReservationRepository(db)
+	Reservation := ReservationRep(t)
 
 	getAllReservations := pb.GetAllReservationRequest{
 		UserId:          "a12d4f5e-0e9c-42b8-847a-3c54b7f6a4c2",
@@ -130,10 +108,9 @@ func TestAllReservationRepository_GetAllReservation(t *testing.T) {
 		Status:          "345rtg",
 	}
 
-	fmt.Println(reservation)
 	expected := pb.ReservationResponse{}
 
-	response, err := reservation.GetAllReservation(&getAllReservations)
+	response, err := Reservation.GetAllReservation(&getAllReservations)
 	if err != nil {
 		fmt.Println("+++++++", err)
 		panic(err)
