@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	pb "reservation_service/genproto"
-	storage "reservation_service/help"
+	"reservation_service/help"
 	"time"
 )
 
@@ -24,8 +25,9 @@ func (repo *MenuRepository) CreateMenu(request *pb.CreateMenuRequest) (*pb.Void,
 }
 
 func (repo *MenuRepository) UpdateMenu(request *pb.UpdateMenuRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("update menu set restaurant_id=$1,name=$2,description=$3,price=$4,updated_at=$5 where id=$6 and deleted_at is null", request.RestaurantId, request.Name, request.Description, request.Price, time.Now(), request.Id)
+	_, err := repo.Db.Exec("update menu set restaurant_id=$1,name=$2,description=$3,price=$4,updated_at=$5  where id=$6 and deleted_at is null", request.RestaurantId, request.Name, request.Description, request.Price, time.Now(), request.Id)
 	if err != nil {
+		fmt.Println("+++++++++++++++", err)
 		return nil, err
 	}
 	return &pb.Void{}, err
@@ -49,54 +51,63 @@ func (repo *MenuRepository) GetByIdMenu(request *pb.IdRequest) (*pb.MenuResponse
 }
 
 func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.MenusResponse, error) {
-	var (
-		params = make(map[string]interface{})
-		arr    []interface{}
-		limit  string
-		offset string
-	)
+	params := make(map[string]interface{})
+	var arr []interface{}
 	filter := ""
+	limit := ""
+	offset := ""
+
 	if len(request.RestaurantId) > 0 {
 		params["restaurant_id"] = request.RestaurantId
-		filter += " and restaurant_id = :restaurant_id "
+		filter += " AND restaurant_id = :restaurant_id"
 	}
 	if len(request.Name) > 0 {
 		params["name"] = request.Name
-		filter += " and name:=name"
+		filter += " AND name = :name"
 	}
 	if len(request.Description) > 0 {
 		params["description"] = request.Description
-		filter += "and description:=description"
+		filter += " AND description = :description"
 	}
 	if request.Price > 0 {
 		params["price"] = request.Price
-		filter += "and price:=price"
+		filter += " AND price = :price"
 	}
+
 	if request.LimitOffset.Limit > 0 {
 		params["limit"] = request.LimitOffset.Limit
-		filter += "and limit:=limit"
+		limit = " LIMIT :limit"
 	}
 	if request.LimitOffset.Offset > 0 {
 		params["offset"] = request.LimitOffset.Offset
-		filter += "and offset:=offset"
+		offset = " OFFSET :offset"
 	}
-	query := "select restaurant_id,name,description,price from menu where deleted_at is null"
 
+	query := "SELECT restaurant_id, name, description, price FROM menu WHERE deleted_at IS NULL"
 	query = query + filter + limit + offset
+
 	query, arr = help.ReplaceQueryParams(query, params)
+	fmt.Println("Query:", query)
+
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err
 	}
-	var menus []*pb.MenuResponse
+	defer rows.Close()
 
+	// Process query results
+	var menus []*pb.MenuResponse
 	for rows.Next() {
 		var menu pb.MenuResponse
-		err := rows.Scan(&menu.RestaurantId, &menu.Name, &menu.Description, &menu.Price)
-		if err != nil {
+		if err := rows.Scan(&menu.RestaurantId, &menu.Name, &menu.Description, &menu.Price); err != nil {
 			return nil, err
 		}
 		menus = append(menus, &menu)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// Return the response
 	return &pb.MenusResponse{Menus: menus}, nil
 }
