@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"reflect"
 	pb "reservation_service/genproto"
-	"reservation_service/storage"
 	"testing"
 )
 
 func ReservationRepo(t *testing.T) *MenuRepository {
-	db, err := storage.ConnectionDb()
+	db, err := ConnectionDb()
 	if err != nil {
 		t.Error("ERROR : ", err)
 		return nil

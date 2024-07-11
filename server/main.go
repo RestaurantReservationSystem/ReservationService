@@ -23,10 +23,7 @@ func main() {
 		log.Fatalf("error is listen up tcp connection in port->", err.Error())
 	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterReservationServiceServer(grpcServer, service.NewReservationService(postgres.NewReservationRepository(db)))
-	pb.RegisterMenuServiceServer(grpcServer, service.NewMenuService(postgres.NewMenuRepository(db)))
-	pb.RegisterOrderServiceServer(grpcServer, service.NewOrderService(postgres.NewOrderRepository(db)))
-	pb.RegisterRestaurantServiceServer(grpcServer, service.NewRestaurantService(postgres.NewRestaurantRepository(db)))
+	pb.RegisterReservationServiceServer(grpcServer, service.NewReservationService(postgres.NewReservationRepository(db), postgres.NewMenuRepository(db), postgres.NewRestaurantRepo(db), postgres.NewOrderRepository(db)))
 	err = grpcServer.Serve(listen)
 	if err != nil {
 		log.Fatalf("error-> connection ->%s", err.Error())
