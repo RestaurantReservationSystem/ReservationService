@@ -3,12 +3,11 @@ package postgres
 import (
 	"reflect"
 	pb "reservation_service/genproto"
-	"reservation_service/storage"
 	"testing"
 )
 
-func RestauranRepo(t *testing.T) *RestaurantRepo {
-	db, err := storage.ConnectionDb()
+func RestaurantRepo(t *testing.T) *RestaurantRepository {
+	db, err := ConnectionDb()
 	if err != nil {
 		t.Error("ERROR : ", err)
 		return nil
@@ -18,11 +17,11 @@ func RestauranRepo(t *testing.T) *RestaurantRepo {
 }
 
 func TestCreateRestaurant(t *testing.T) {
-	RestaurantRepo := RestauranRepo(t)
+	RestaurantRepo := ReservationRepo(t)
 
 	request := pb.CreateRestaurantRequest{Name: "Rayhon", Address: "Chilonzor", PhoneNumber: "+998954674546", Description: "Oilaviy resatoran"}
 
-	res, err := RestaurantRepo.CreateRestaurant(&request)
+	res, err := RestaurantRepo.Cre(&request)
 	if err != nil {
 		t.Error("Error : ", err)
 		return
