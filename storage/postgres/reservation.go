@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	pb "reservation_service/genproto"
 	"reservation_service/help"
 	"time"
@@ -59,28 +60,29 @@ func (repo *ReservationRepository) GetAllReservation(request *pb.GetAllReservati
 	}
 	if len(request.RestaurantId) > 0 {
 		params["restaurant_id"] = request.RestaurantId
-		filter += " and restaurant_id:=restaurant_id"
+		filter += " and restaurant_id = :restaurant_id"
 	}
 	if len(request.ReservationTime) > 0 {
 		params["reservation_time"] = request.ReservationTime
-		filter += "and reservation_time:=reservation_time"
+		filter += " and reservation_time = :reservation_time"
 	}
 	if len(request.Status) > 0 {
 		params["status"] = request.Status
-		filter += "and status:=status"
+		filter += " and status = :status"
 	}
 	if request.LimitOffset.Limit > 0 {
 		params["limit"] = request.LimitOffset.Limit
-		filter += "and limit:=limit"
+		limit += " and limit = :limit"
 	}
 	if request.LimitOffset.Offset > 0 {
 		params["offset"] = request.LimitOffset.Offset
-		filter += "and offset:=offset"
+		offset += " and offset = :offset"
 	}
 	query := "select user_id,restaurant_id,reservation_time,status from reservations where deleted_at is null"
 
 	query = query + filter + limit + offset
 	query, arr = help.ReplaceQueryParams(query, params)
+	fmt.Println("+++++++",query)
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err

@@ -54,11 +54,11 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 	var (
 		params = make(map[string]interface{})
 		arr    []interface{}
+		filter string
 		limit  string
 		offset string
 	)
-	filter := ""
-
+	
 	if len(request.RestaurantId) > 0 {
 		params["restaurant_id"] = request.RestaurantId
 		filter += " AND restaurant_id = :restaurant_id"
@@ -85,8 +85,11 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 		params["offset"] = request.LimitOffset.Offset
 		offset = " OFFSET :offset"
 	}
-	query := "SELECT name, address, phone_number, description FROM restaurants WHERE deleted_at IS NULL"
-	query += filter + limit + offset
+	query := "SELECT restaurant_id, name, description, price FROM menu WHERE deleted_at IS NULL"
+	if filter != "" {
+		query += " AND " + filter[4:] // Remove leading " AND"
+	}
+	query += limit + offset
 
 	query, arr = help.ReplaceQueryParams(query, params)
 	fmt.Println("Query:", query)
@@ -112,3 +115,4 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 
 	return &pb.MenusResponse{Menus: menus}, nil
 }
+
