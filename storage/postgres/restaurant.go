@@ -58,13 +58,11 @@ func (repo *RestaurantRepository) GetAllRestaurants(request *pb.GetAllRestaurant
 	)
 	filter := ""
 
-	// Constructing the WHERE clause based on request parameters
 	if len(request.Address) > 0 {
 		params["address"] = request.Address
 		filter += " AND address = :address"
 	}
 
-	// Handling LIMIT and OFFSET for pagination
 	if request.LimitOffset.Limit > 0 {
 		params["limit"] = request.LimitOffset.Limit
 		limit = " LIMIT :limit"
@@ -74,14 +72,11 @@ func (repo *RestaurantRepository) GetAllRestaurants(request *pb.GetAllRestaurant
 		params["offset"] = request.LimitOffset.Offset
 		offset = " OFFSET :offset"
 	}
-
-	// Construct the SQL query
 	query := "SELECT name, address, phone_number, description FROM restaurants WHERE deleted_at IS NULL"
 	query += filter + limit + offset
 
 	query, arr = storage.ReplaceQueryParams(query, params)
-
-	// Execute the query
+	fmt.Println("+++++++", query)
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err
