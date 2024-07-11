@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"reflect"
 	pb "reservation_service/genproto"
-	"reservation_service/storage"
 	"testing"
 )
 
-func MenuRepo(t *testing.T) *MenuRepository {
-	db, err := storage.ConnectionDb()
+func ReservationRepo(t *testing.T) *MenuRepository {
+	db, err := ConnectionDb()
 	if err != nil {
 		t.Error("ERROR : ", err)
 		return nil
@@ -19,13 +18,13 @@ func MenuRepo(t *testing.T) *MenuRepository {
 }
 
 func TestCreateMenu(t *testing.T) {
-	reservationRepo := MenuRepo(t)
+	reservationRepo := ReservationRepo(t)
 
 	request := pb.CreateMenuRequest{
 		RestaurantId: "b00dbf91-fecc-4419-9bfe-1dac7c1ed8c6",
 		Name:         "Palov",
 		Description:  "Mazali va Qazili",
-		Price:        12220000,
+		Price:        100000,
 	}
 
 	res, err := reservationRepo.CreateMenu(&request)
@@ -43,7 +42,7 @@ func TestCreateMenu(t *testing.T) {
 }
 
 func TestUpdateMenu(t *testing.T) {
-	reservationRepo := MenuRepo(t)
+	reservationRepo := ReservationRepo(t)
 
 	request := pb.UpdateMenuRequest{
 		Id:           "46e59237-a0e5-49a4-be53-bc6349978f31",
@@ -68,9 +67,9 @@ func TestUpdateMenu(t *testing.T) {
 }
 
 func TestDeleteMenu(t *testing.T) {
-	reservationRepo := MenuRepo(t)
+	reservationRepo := ReservationRepo(t)
 
-	request := pb.IdRequest{Id: "2ddb9e25-5682-4def-95d6-ee33cd93a576"}
+	request := pb.IdRequest{Id: "8bcfda5a-df4b-476f-a89f-a0d623350589"}
 
 	res, err := reservationRepo.DeleteMenu(&request)
 	if err != nil {
@@ -87,7 +86,7 @@ func TestDeleteMenu(t *testing.T) {
 }
 
 func TestGetByIdMenu(t *testing.T) {
-	reservationRepo := MenuRepo(t)
+	reservationRepo := ReservationRepo(t)
 
 	request := pb.IdRequest{Id: "46e59237-a0e5-49a4-be53-bc6349978f31"}
 
@@ -112,7 +111,7 @@ func TestGetByIdMenu(t *testing.T) {
 }
 
 func TestGetAllMenu(t *testing.T) {
-	reservationRepo := MenuRepo(t)
+	reservationRepo := ReservationRepo(t)
 
 	request := pb.GetAllMenuRequest{
 		RestaurantId: "b00dbf91-fecc-4419-9bfe-1dac7c1ed8c6",

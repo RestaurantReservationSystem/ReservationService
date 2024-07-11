@@ -9,12 +9,12 @@ import (
 type ReservationService struct {
 	ReservationRepo *postgres.ReservationRepository
 	MenuRepo        *postgres.MenuRepository
-	RestaurantRepo  *postgres.RestaurantRepo
+	RestaurantRepo  *postgres.RestaurantRepository
 	OrderRepo       *postgres.OrderRepository
 	pb.UnimplementedReservationServiceServer
 }
 
-func NewReservationService(reservation *postgres.ReservationRepository, menu *postgres.MenuRepository, restaurant *postgres.RestaurantRepo, order *postgres.OrderRepository) *ReservationService {
+func NewReservationService(reservation *postgres.ReservationRepository, menu *postgres.MenuRepository, restaurant *postgres.RestaurantRepository, order *postgres.OrderRepository) *ReservationService {
 	return &ReservationService{ReservationRepo: reservation, MenuRepo: menu, RestaurantRepo: restaurant, OrderRepo: order}
 }
 func (service *ReservationService) CreateReservation(ctx context.Context, in *pb.CreateReservationRequest) (*pb.Void, error) {
