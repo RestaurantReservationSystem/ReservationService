@@ -31,7 +31,7 @@ func (repo *ReservationRepository) CreateReservation(request *pb.CreateReservati
 func (repo *ReservationRepository) UpdateReservation(request *pb.UpdateReservationRequest) (*pb.Void, error) {
 	_, err := repo.Db.Exec("update reservations set user_id=$1,restaurant_id=$2,reservation_time=$3,status=$4,updated_at=$5 where id=$6 and deleted_at is null", request.UserId, request.RestaurantId, request.ReservationTime, request.Status, time.Now(), request.Id)
 	lg := logger.NewLogger()
-	lg.Error(fmt.Sprintf(" message error ->%v", err))
+	lg.Error(fmt.Sprintf(" message  reservation error ->%v", err))
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +40,13 @@ func (repo *ReservationRepository) UpdateReservation(request *pb.UpdateReservati
 	return &pb.Void{}, err
 }
 func (repo *ReservationRepository) DeleteReservation(request *pb.IdRequest) (*pb.Void, error) {
+	lg := logger.NewLogger()
 	_, err := repo.Db.Exec("update reservations set deleted_at=$1 where id=$2 and deleted_at is null", time.Now(), request.Id)
 	if err != nil {
+		lg.Error(fmt.Sprintf(" message  reservation error ->%v", err))
 		return nil, err
 	}
+	lg.Info(fmt.Sprintf("message is Update reservation-> Created this object %s", request))
 	return &pb.Void{}, err
 }
 func (repo *ReservationRepository) GetByIdReservation(request *pb.IdRequest) (*pb.ReservationResponse, error) {
