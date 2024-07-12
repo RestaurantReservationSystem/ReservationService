@@ -65,19 +65,19 @@ service  ReservationService{
 message  CreateOrderRequest{
   string  reservation_id=1;
   string menu_item_id=2;
-  string  quantity=3;
+  int64  quantity=3;
 
 }
 message  UpdateOrderRequest{
   string  Id=1;
   string  reservation_id=2;
   string menu_item_id=3;
-  string  quantity=4;
+  int64  quantity=4;
 }
 message  OrderResponse{
   string  reservation_id=1;
   string menu_item_id=2;
-  string quantity=3;
+  int64 quantity=3;
 }
 message  OrdersResponse{
   repeated   OrderResponse orders=1;
@@ -85,7 +85,7 @@ message  OrdersResponse{
 message  GetAllOrderRequest{
   string  reservation_id=1;
   string menu_item_id=2;
-  string quantity=3;
+  int64 quantity=3;
   Filter limitOffset=5;
 }
 message RestaurantResponse {

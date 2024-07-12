@@ -85,7 +85,7 @@ func (repo *MenuRepository) GetAllMenu(request *pb.GetAllMenuRequest) (*pb.Menus
 		params["offset"] = request.LimitOffset.Offset
 		offset = " OFFSET :offset"
 	}
-	query := "SELECT name, address, phone_number, description FROM restaurants WHERE deleted_at IS NULL"
+	query := "SELECT restaurant_id, name, description, price FROM menu WHERE deleted_at IS NULL"
 	query += filter + limit + offset
 
 	query, arr = help.ReplaceQueryParams(query, params)

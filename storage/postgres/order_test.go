@@ -20,7 +20,7 @@ func TestOrderRepository_CreateOrder(t *testing.T) {
 	ords := pb.CreateOrderRequest{
 		ReservationId: "a12d4f5e-0e9c-42b8-847a-3c54b7f6a4c2",
 		MenuItemId:    "30.00",
-		Quantity:      "credit_card",
+		Quantity:      89,
 	}
 	response, err := ord.CreateOrder(&ords)
 	if err != nil {
@@ -68,7 +68,7 @@ func TestOrderRepository_UpdateOrder(t *testing.T) {
 		Id:            "b271e2a3-f90d-4b51-bfd5-808bd65f1756",
 		ReservationId: "d3dcbdff-de1c-452d-94da-2bb783f1016a",
 		MenuItemId:    "753.5",
-		Quantity:      "salom",
+		Quantity:      12,
 	}
 	response, err := ord.UpdateOrder(&orderUpdate)
 	if err != nil {
@@ -98,7 +98,7 @@ func TestOrderRepository_GetOrder(t *testing.T) {
 	expected := pb.OrderResponse{
 		ReservationId: "a12d4f5e-0e9c-42b8-847a-3c54b7f6a4c2",
 		MenuItemId:    "credit_card",
-		Quantity:      "pending",
+		Quantity:      89,
 	}
 
 	response, err := pay.GetByIdOrder(&getOrder)
@@ -124,7 +124,7 @@ func TestAllOrderRepository_GetAllOrder(t *testing.T) {
 	getAllOrders := pb.GetAllOrderRequest{
 		ReservationId: "d3dcbdff-de1c-452d-94da-2bb783f1016a",
 		MenuItemId:    "salom",
-		Quantity:      "+++++++++++++++++++++++",
+		Quantity:      89,
 	}
 
 	fmt.Println(payment)

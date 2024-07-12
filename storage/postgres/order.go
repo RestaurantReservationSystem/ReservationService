@@ -61,7 +61,7 @@ func (repo *OrderRepository) GetAllOrder(request *pb.GetAllOrderRequest) (*pb.Or
 		params["menu_item_id"] = request.MenuItemId
 		filter += " and menu_item_id:=menu_item_id"
 	}
-	if len(request.Quantity) > 0 {
+	if request.Quantity > 0 {
 		params["quantity"] = request.Quantity
 		filter += "and quantity:=quantity"
 	}

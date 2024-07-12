@@ -3,7 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
-
 	"reservation_service/config"
 
 	_ "github.com/lib/pq"
@@ -11,7 +10,6 @@ import (
 
 func ConnectionDb() (*sql.DB, error) {
 	cfg := config.Load()
-
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDatabase)
 

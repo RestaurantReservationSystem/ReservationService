@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
+	"reservation_service/config/logger"
 	pb "reservation_service/genproto"
 	"reservation_service/help"
 	"time"
@@ -16,17 +18,25 @@ func NewReservationRepository(db *sql.DB) *ReservationRepository {
 }
 
 func (repo *ReservationRepository) CreateReservation(request *pb.CreateReservationRequest) (*pb.Void, error) {
+	lg := logger.NewLogger()
 	_, err := repo.Db.Exec("insert into reservations(user_id,restaurant_id,reservation_time,status,created_at) values ($1,$2,$3,$4,$5)", request.UserId, request.RestaurantId, request.ReservationTime, request.Status, time.Now())
 	if err != nil {
+		lg.Error(fmt.Sprintf(" message reservation error ->%v", err))
 		return nil, err
 	}
+	lg.Info(fmt.Sprintf("message is reservation Ok-> Created this object %s", request))
 	return &pb.Void{}, err
+
 }
 func (repo *ReservationRepository) UpdateReservation(request *pb.UpdateReservationRequest) (*pb.Void, error) {
 	_, err := repo.Db.Exec("update reservations set user_id=$1,restaurant_id=$2,reservation_time=$3,status=$4,updated_at=$5 where id=$6 and deleted_at is null", request.UserId, request.RestaurantId, request.ReservationTime, request.Status, time.Now(), request.Id)
+	lg := logger.NewLogger()
+	lg.Error(fmt.Sprintf(" message error ->%v", err))
 	if err != nil {
 		return nil, err
 	}
+	lg.Info(fmt.Sprintf("message is Update reservation-> Created this object %s", request))
+
 	return &pb.Void{}, err
 }
 func (repo *ReservationRepository) DeleteReservation(request *pb.IdRequest) (*pb.Void, error) {
